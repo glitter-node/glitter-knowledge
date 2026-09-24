@@ -1,0 +1,56 @@
+{
+  "version": "1.0.0",
+  "layout_name": "auth/register",
+  "extends": "_user_base",
+  "meta": { "title": "$t:auth_page.register_title", "guest_only": true },
+  "init_actions": [
+    { "handler": "setState", "params": { "target": "local", "registerForm": { "name": "", "nickname": "", "email": "", "password": "", "password_confirmation": "", "agree_terms": "", "agree_privacy": "" }, "isRegistering": false, "registerError": null, "registerErrors": null } }
+  ],
+  "slots": {
+    "content": [
+      {
+        "type": "basic", "name": "Section", "props": { "className": "gk-container gk-shell gk-auth-shell" },
+        "children": [
+          { "type": "basic", "name": "P", "props": { "className": "gk-eyebrow" }, "text": "$t:auth_page.kicker" },
+          { "type": "basic", "name": "H1", "props": { "className": "gk-page-title" }, "text": "$t:auth_page.register_heading" },
+          { "type": "basic", "name": "P", "props": { "className": "gk-lede" }, "text": "$t:auth_page.register_description" },
+          {
+            "type": "basic", "name": "Form", "dataKey": "registerForm", "props": { "className": "gk-auth-card gk-form" },
+            "children": [
+              { "type": "basic", "name": "Div", "if": "{{_local.registerError}}", "props": { "className": "gk-form-message gk-form-message-error", "role": "alert" }, "text": "{{_local.registerError}}" },
+              { "type": "basic", "name": "Label", "props": { "htmlFor": "gk-register-name", "className": "gk-form-label" }, "text": "$t:auth_page.name" },
+              { "type": "basic", "name": "Input", "props": { "id": "gk-register-name", "name": "name", "type": "text", "autoComplete": "name", "required": true, "disabled": "{{_local.isRegistering}}", "className": "gk-form-input" } },
+              { "type": "basic", "name": "P", "if": "{{_local.registerErrors?.name}}", "props": { "className": "gk-form-message gk-form-message-error", "role": "alert" }, "text": "{{Array.isArray(_local.registerErrors.name) ? _local.registerErrors.name[0] : _local.registerErrors.name}}" },
+              { "type": "basic", "name": "Label", "props": { "htmlFor": "gk-register-nickname", "className": "gk-form-label" }, "text": "$t:auth_page.nickname" },
+              { "type": "basic", "name": "Input", "props": { "id": "gk-register-nickname", "name": "nickname", "type": "text", "autoComplete": "nickname", "disabled": "{{_local.isRegistering}}", "className": "gk-form-input" } },
+              { "type": "basic", "name": "P", "if": "{{_local.registerErrors?.nickname}}", "props": { "className": "gk-form-message gk-form-message-error", "role": "alert" }, "text": "{{Array.isArray(_local.registerErrors.nickname) ? _local.registerErrors.nickname[0] : _local.registerErrors.nickname}}" },
+              { "type": "basic", "name": "Label", "props": { "htmlFor": "gk-register-email", "className": "gk-form-label" }, "text": "$t:auth_page.email" },
+              { "type": "basic", "name": "Input", "props": { "id": "gk-register-email", "name": "email", "type": "email", "autoComplete": "email", "required": true, "disabled": "{{_local.isRegistering}}", "className": "gk-form-input" } },
+              { "type": "basic", "name": "P", "if": "{{_local.registerErrors?.email}}", "props": { "className": "gk-form-message gk-form-message-error", "role": "alert" }, "text": "{{Array.isArray(_local.registerErrors.email) ? _local.registerErrors.email[0] : _local.registerErrors.email}}" },
+              { "type": "basic", "name": "Label", "props": { "htmlFor": "gk-register-password", "className": "gk-form-label" }, "text": "$t:auth_page.password" },
+              { "type": "basic", "name": "Input", "props": { "id": "gk-register-password", "name": "password", "type": "password", "autoComplete": "new-password", "required": true, "disabled": "{{_local.isRegistering}}", "className": "gk-form-input" } },
+              { "type": "basic", "name": "P", "if": "{{_local.registerErrors?.password}}", "props": { "className": "gk-form-message gk-form-message-error", "role": "alert" }, "text": "{{Array.isArray(_local.registerErrors.password) ? _local.registerErrors.password[0] : _local.registerErrors.password}}" },
+              { "type": "basic", "name": "Label", "props": { "htmlFor": "gk-register-password-confirmation", "className": "gk-form-label" }, "text": "$t:auth_page.password_confirmation" },
+              { "type": "basic", "name": "Input", "props": { "id": "gk-register-password-confirmation", "name": "password_confirmation", "type": "password", "autoComplete": "new-password", "required": true, "disabled": "{{_local.isRegistering}}", "className": "gk-form-input" } },
+              { "type": "basic", "name": "P", "if": "{{_local.registerErrors?.password_confirmation}}", "props": { "className": "gk-form-message gk-form-message-error", "role": "alert" }, "text": "{{Array.isArray(_local.registerErrors.password_confirmation) ? _local.registerErrors.password_confirmation[0] : _local.registerErrors.password_confirmation}}" },
+              { "type": "basic", "name": "Label", "props": { "className": "gk-consent-row" }, "children": [{ "type": "basic", "name": "Input", "props": { "id": "gk-agree-terms", "name": "agree_terms", "type": "checkbox", "value": "1", "required": true, "disabled": "{{_local.isRegistering}}" } }, { "type": "basic", "name": "Span", "text": "$t:auth_page.agree_terms" }] },
+              { "type": "basic", "name": "P", "if": "{{_local.registerErrors?.agree_terms}}", "props": { "className": "gk-form-message gk-form-message-error", "role": "alert" }, "text": "{{Array.isArray(_local.registerErrors.agree_terms) ? _local.registerErrors.agree_terms[0] : _local.registerErrors.agree_terms}}" },
+              { "type": "basic", "name": "Label", "props": { "className": "gk-consent-row" }, "children": [{ "type": "basic", "name": "Input", "props": { "id": "gk-agree-privacy", "name": "agree_privacy", "type": "checkbox", "value": "1", "required": true, "disabled": "{{_local.isRegistering}}" } }, { "type": "basic", "name": "Span", "text": "$t:auth_page.agree_privacy" }] },
+              { "type": "basic", "name": "P", "if": "{{_local.registerErrors?.agree_privacy}}", "props": { "className": "gk-form-message gk-form-message-error", "role": "alert" }, "text": "{{Array.isArray(_local.registerErrors.agree_privacy) ? _local.registerErrors.agree_privacy[0] : _local.registerErrors.agree_privacy}}" },
+              { "type": "basic", "name": "Button", "props": { "type": "submit", "disabled": "{{_local.isRegistering}}", "className": "gk-form-submit" }, "text": "$t:auth_page.register_submit" }
+            ],
+            "actions": [{ "type": "submit", "handler": "sequence", "actions": [
+              { "handler": "setState", "params": { "target": "local", "isRegistering": true, "registerError": null, "registerErrors": null } },
+              { "handler": "apiCall", "target": "/api/auth/register", "params": { "method": "POST", "body": "{{_local.registerForm}}" }, "onSuccess": [
+                { "handler": "setState", "params": { "target": "local", "isRegistering": false } },
+                { "handler": "toast", "params": { "type": "success", "message": "$t:auth_page.register_success" } },
+                { "handler": "navigate", "params": { "path": "/login" } }
+              ], "onError": [{ "handler": "setState", "params": { "target": "local", "isRegistering": false, "registerError": "$t:auth_page.register_failed", "registerErrors": "{{error.response?.errors ?? error.errors}}" } }] }
+            ] }]
+          },
+          { "type": "basic", "name": "P", "props": { "className": "gk-auth-switch" }, "children": [{ "type": "basic", "name": "Span", "text": "$t:auth_page.register_login_prompt" }, { "type": "basic", "name": "A", "props": { "href": "/login", "className": "gk-text-link" }, "text": "$t:auth_page.login_link" }] }
+        ]
+      }
+    ]
+  }
+}

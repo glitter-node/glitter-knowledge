@@ -1,0 +1,73 @@
+{
+  "version": "1.0.0",
+  "layout_name": "home",
+  "extends": "_user_base",
+  "meta": { "title": "$t:discovery.page_title", "description": "$t:discovery.description" },
+  "data_sources": [
+    { "id": "readableBoards", "label_key": "$t:discovery.data_source", "type": "api", "endpoint": "/api/modules/sirsoft-board/boards", "method": "GET", "params": {}, "auto_fetch": true, "auth_mode": "optional", "loading_strategy": "progressive", "refetchOnMount": true }
+  ],
+  "slots": {
+    "content": [
+      {
+        "type": "basic",
+        "name": "Section",
+        "props": { "className": "gk-container gk-shell gk-discovery" },
+        "children": [
+          {
+            "type": "basic",
+            "name": "Div",
+            "props": { "className": "gk-intro" },
+            "children": [
+              { "type": "basic", "name": "P", "props": { "className": "gk-eyebrow" }, "text": "$t:discovery.kicker" },
+              { "type": "basic", "name": "H1", "props": { "className": "gk-page-title" }, "text": "$t:discovery.title" },
+              { "type": "basic", "name": "P", "props": { "className": "gk-lede" }, "text": "$t:discovery.intro" }
+            ]
+          },
+          {
+            "type": "basic",
+            "name": "Section",
+            "props": { "className": "gk-section gk-browse-section", "aria-labelledby": "gk-browse-title" },
+            "children": [
+              { "type": "basic", "name": "H2", "props": { "id": "gk-browse-title", "className": "gk-section-heading" }, "text": "$t:discovery.browse_title" },
+              { "type": "basic", "name": "P", "props": { "className": "gk-section-intro" }, "text": "$t:discovery.browse_intro" },
+              { "type": "basic", "name": "Div", "if": "{{readableBoards?.loading}}", "props": { "className": "gk-state gk-state-inline", "role": "status", "aria-live": "polite" }, "children": [{ "type": "basic", "name": "P", "text": "$t:state.loading" }] },
+              { "type": "basic", "name": "Div", "if": "{{readableBoards?.error}}", "props": { "className": "gk-state gk-error", "role": "alert" }, "children": [{ "type": "basic", "name": "P", "text": "$t:state.error" }, { "type": "basic", "name": "Button", "props": { "type": "button", "className": "gk-link-button" }, "actions": [{ "type": "click", "handler": "refetchDataSource", "params": { "dataSourceId": "readableBoards" } }], "text": "$t:state.retry" }] },
+              {
+                "type": "basic",
+                "name": "Div",
+                "if": "{{!readableBoards?.loading && !readableBoards?.error && (readableBoards?.data?.length ?? 0) > 0}}",
+                "props": { "className": "gk-topic-grid", "role": "list", "aria-label": "$t:discovery.list_label" },
+                "children": [
+                  {
+                    "type": "basic",
+                    "name": "A",
+                    "iteration": { "source": "{{readableBoards?.data ?? []}}", "item_var": "board", "index_var": "idx" },
+                    "props": { "className": "gk-topic-card", "role": "listitem", "href": "/knowledge/{{board.slug}}" },
+                    "children": [
+                      { "type": "basic", "name": "Span", "props": { "className": "gk-topic-index", "aria-hidden": "true" }, "text": "{{idx + 1}}" },
+                      { "type": "basic", "name": "H3", "props": { "className": "gk-topic-title" }, "text": "{{board.name}}" },
+                      { "type": "basic", "name": "P", "if": "{{board.description}}", "props": { "className": "gk-topic-description" }, "text": "{{board.description}}" },
+                      { "type": "basic", "name": "Span", "props": { "className": "gk-topic-count" }, "text": "$t:discovery.document_count|count={{board.posts_count ?? 0}}" },
+                      { "type": "basic", "name": "Span", "props": { "className": "gk-topic-action" }, "text": "$t:discovery.open_board" }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "name": "Div",
+                "if": "{{!readableBoards?.loading && !readableBoards?.error && (readableBoards?.data?.length ?? 0) === 0}}",
+                "props": { "className": "gk-empty-card" },
+                "children": [
+                  { "type": "basic", "name": "H3", "props": { "className": "gk-empty-title" }, "text": "$t:discovery.empty_title" },
+                  { "type": "basic", "name": "P", "props": { "className": "gk-empty-body" }, "text": "$t:discovery.empty_body" },
+                  { "type": "basic", "name": "A", "props": { "href": "/knowledge", "className": "gk-link-button" }, "text": "$t:discovery.empty_action" }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "version": "1.0.0",
+  "layout_name": "knowledge/reader",
+  "extends": "_user_base",
+  "data_sources": [
+    { "id": "knowledgePost", "label_key": "$t:reader.data_source", "type": "api", "endpoint": "/api/modules/sirsoft-board/boards/{{route.slug}}/posts/{{route.id}}", "method": "GET", "params": {}, "auto_fetch": true, "auth_mode": "optional", "loading_strategy": "blocking", "refetchOnMount": true },
+    { "id": "readerBoard", "label_key": "$t:reader.data_source", "type": "api", "endpoint": "/api/modules/sirsoft-board/boards/{{route.slug}}", "method": "GET", "params": {}, "auto_fetch": true, "auth_mode": "optional", "loading_strategy": "progressive", "refetchOnMount": true },
+    { "id": "knowledgeNavigation", "label_key": "$t:reader.navigation_data_source", "type": "api", "endpoint": "/api/modules/sirsoft-board/boards/{{route.slug}}/posts/{{route.id}}/navigation", "method": "GET", "params": {}, "auto_fetch": true, "auth_mode": "optional", "loading_strategy": "progressive", "refetchOnMount": true }
+  ],
+  "slots": {
+    "content": [
+      {
+        "type": "basic",
+        "name": "Section",
+        "props": { "className": "gk-container gk-shell gk-reader" },
+        "children": [
+          { "type": "basic", "name": "Div", "if": "{{knowledgePost?.loading}}", "props": { "className": "gk-state gk-reader-state", "role": "status", "aria-live": "polite" }, "children": [{ "type": "basic", "name": "P", "text": "$t:state.loading" }] },
+          { "type": "basic", "name": "Div", "if": "{{knowledgePost?.error}}", "props": { "className": "gk-state gk-error gk-reader-state", "role": "alert" }, "children": [{ "type": "basic", "name": "P", "text": "$t:reader.unavailable" }, { "type": "basic", "name": "A", "props": { "href": "/knowledge/{{route.slug}}{{query?.q ? '?q=' + query.q : ''}}", "className": "gk-link-button" }, "text": "$t:reader.back_board" }, { "type": "basic", "name": "A", "props": { "href": "/knowledge", "className": "gk-link-button" }, "text": "$t:reader.back_home" }] },
+          {
+            "type": "basic",
+            "name": "Div",
+            "if": "{{knowledgePost?.data && !knowledgePost?.error}}",
+            "props": { "className": "gk-reader-layout" },
+            "children": [
+              {
+                "type": "basic",
+                "name": "Div",
+                "props": { "className": "gk-reader-sidebar", "aria-label": "$t:reader.sidebar_label" },
+                "children": [
+                  { "type": "basic", "name": "P", "props": { "className": "gk-sidebar-label" }, "text": "$t:reader.topics" },
+                  { "type": "basic", "name": "Ul", "props": { "className": "gk-sidebar-list" }, "children": [{ "type": "basic", "name": "Li", "iteration": { "source": "{{readerBoard?.data?.categories ?? []}}", "item_var": "category", "index_var": "idx" }, "if": "{{category !== 'unclassified'}}", "children": [{ "type": "basic", "name": "A", "props": { "href": "/knowledge/{{route.slug}}/collections?category={{category}}{{query?.q ? '&q=' + query.q : ''}}", "className": "gk-sidebar-link", "aria-current": "{{knowledgePost?.data?.category === category ? 'page' : undefined}}" }, "text": "{{category}}" }] }] }
+                ]
+              },
+              {
+                "type": "basic",
+                "name": "Article",
+                "props": { "className": "gk-reader-article" },
+                "children": [
+                  {
+                    "type": "basic",
+                    "name": "Div",
+                    "props": { "className": "gk-breadcrumb", "aria-label": "$t:reader.breadcrumb_label" },
+                    "children": [{ "type": "basic", "name": "Ul", "props": { "className": "gk-breadcrumb-list" }, "children": [{ "type": "basic", "name": "Li", "props": { "className": "gk-breadcrumb-item" }, "children": [{ "type": "basic", "name": "A", "props": { "href": "/knowledge", "className": "gk-breadcrumb-link" }, "text": "$t:base.home_label" }] }, { "type": "basic", "name": "Li", "props": { "className": "gk-breadcrumb-item" }, "children": [{ "type": "basic", "name": "A", "props": { "href": "/knowledge/{{route.slug}}{{query?.q ? '?q=' + query.q : ''}}", "className": "gk-breadcrumb-link" }, "text": "{{knowledgePost?.data?.board?.name ?? ''}}" }] }, { "type": "basic", "name": "Li", "if": "{{knowledgePost?.data?.category && knowledgePost?.data?.category !== 'unclassified'}}", "props": { "className": "gk-breadcrumb-item" }, "children": [{ "type": "basic", "name": "A", "props": { "href": "/knowledge/{{route.slug}}/collections?category={{knowledgePost?.data?.category ?? ''}}{{query?.q ? '&q=' + query.q : ''}}", "className": "gk-breadcrumb-link" }, "text": "{{knowledgePost?.data?.category ?? ''}}" }] }, { "type": "basic", "name": "Li", "props": { "className": "gk-breadcrumb-item gk-breadcrumb-current" }, "children": [{ "type": "basic", "name": "Span", "props": { "aria-current": "page" }, "text": "{{knowledgePost?.data?.title ?? ''}}" }] }] }]
+                  },
+                  { "type": "basic", "name": "P", "props": { "className": "gk-eyebrow" }, "text": "$t:reader.kicker" },
+                  { "type": "basic", "name": "H1", "props": { "className": "gk-reader-title" }, "text": "{{knowledgePost?.data?.title ?? ''}}" },
+                  { "type": "basic", "name": "Div", "props": { "className": "gk-reader-meta" }, "children": [{ "type": "basic", "name": "Span", "if": "{{knowledgePost?.data?.author?.name}}", "props": { "className": "gk-reader-meta-item" }, "children": [{ "type": "basic", "name": "Span", "props": { "className": "gk-reader-meta-label" }, "text": "$t:reader.author" }, { "type": "basic", "name": "Span", "text": "{{knowledgePost?.data?.author?.name ?? ''}}" }] }, { "type": "basic", "name": "Span", "if": "{{knowledgePost?.data?.created_at}}", "props": { "className": "gk-reader-meta-item" }, "children": [{ "type": "basic", "name": "Span", "props": { "className": "gk-reader-meta-label" }, "text": "$t:reader.created" }, { "type": "basic", "name": "Time", "props": { "datetime": "{{knowledgePost?.data?.created_at}}" }, "text": "{{knowledgePost?.data?.created_at_formatted ?? knowledgePost?.data?.created_at ?? ''}}" }] }] },
+                  { "type": "composite", "name": "DocumentContent", "props": { "content": "{{knowledgePost?.data?.content ?? ''}}", "isHtml": "{{(knowledgePost?.data?.content_mode ?? 'text') === 'html'}}", "className": "gk-reader-content", "showToc": true, "tocLabel": "$t:reader.table_of_contents", "progressLabel": "$t:reader.reading_progress", "contentId": "gk-reader-document-content" } },
+                  { "type": "basic", "name": "Div", "if": "{{knowledgePost?.data?.category && knowledgePost?.data?.category !== 'unclassified'}}", "props": { "className": "gk-reader-navigation", "aria-label": "$t:reader.context_navigation" }, "children": [{ "type": "basic", "name": "A", "props": { "href": "/knowledge/{{route.slug}}/collections?category={{knowledgePost?.data?.category ?? ''}}{{query?.q ? '&q=' + query.q : ''}}", "className": "gk-reader-collection-return" }, "text": "$t:reader.back_collection|collection={{knowledgePost?.data?.category ?? ''}}" }] },
+                  { "type": "basic", "name": "Div", "if": "{{knowledgeNavigation?.data?.prev || knowledgeNavigation?.data?.next}}", "props": { "className": "gk-reader-adjacent-navigation", "role": "navigation", "aria-label": "$t:reader.neighbor_navigation" }, "children": [{ "type": "basic", "name": "A", "if": "{{knowledgeNavigation?.data?.prev}}", "props": { "href": "/knowledge/{{route.slug}}/documents/{{knowledgeNavigation?.data?.prev?.id}}?category={{knowledgePost?.data?.category ?? ''}}{{query?.q ? '&q=' + query.q : ''}}", "className": "gk-reader-adjacent" }, "children": [{ "type": "basic", "name": "Span", "props": { "className": "gk-reader-adjacent-label" }, "text": "$t:reader.previous_document" }, { "type": "basic", "name": "Span", "text": "{{knowledgeNavigation?.data?.prev?.title ?? ''}}" }] }, { "type": "basic", "name": "A", "if": "{{knowledgeNavigation?.data?.next}}", "props": { "href": "/knowledge/{{route.slug}}/documents/{{knowledgeNavigation?.data?.next?.id}}?category={{knowledgePost?.data?.category ?? ''}}{{query?.q ? '&q=' + query.q : ''}}", "className": "gk-reader-adjacent gk-reader-next" }, "children": [{ "type": "basic", "name": "Span", "props": { "className": "gk-reader-adjacent-label" }, "text": "$t:reader.next_document" }, { "type": "basic", "name": "Span", "text": "{{knowledgeNavigation?.data?.next?.title ?? ''}}" }] }] }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

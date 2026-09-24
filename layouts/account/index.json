@@ -1,0 +1,88 @@
+{
+  "version": "1.0.0",
+  "layout_name": "account/index",
+  "extends": "_user_base",
+  "meta": { "title": "$t:account_page.title", "auth_required": true },
+  "data_sources": [
+    { "id": "accountProfile", "label_key": "$t:auth.current_user_data_source", "type": "api", "endpoint": "/api/me", "method": "GET", "auto_fetch": true, "auth_required": true, "loading_strategy": "blocking", "initLocal": "profileForm" }
+  ],
+  "init_actions": [
+    { "handler": "setState", "params": { "target": "local", "profileSaving": false, "profileError": null, "profileErrors": null, "profileSuccess": null, "passwordSaving": false, "passwordError": null, "passwordErrors": null, "passwordSuccess": null, "passwordForm": { "current_password": "", "password": "", "password_confirmation": "" } } }
+  ],
+  "slots": {
+    "content": [
+      {
+        "type": "basic", "name": "Section", "props": { "className": "gk-container gk-shell gk-account-shell" },
+        "children": [
+          { "type": "basic", "name": "P", "props": { "className": "gk-eyebrow" }, "text": "$t:account_page.kicker" },
+          { "type": "basic", "name": "H1", "props": { "className": "gk-page-title" }, "text": "$t:account_page.title" },
+          { "type": "basic", "name": "P", "props": { "className": "gk-lede" }, "text": "$t:account_page.description" },
+          { "type": "basic", "name": "Div", "if": "{{accountProfile?.loading}}", "props": { "className": "gk-state", "role": "status", "aria-live": "polite" }, "children": [{ "type": "basic", "name": "P", "text": "$t:state.loading" }] },
+          { "type": "basic", "name": "Div", "if": "{{accountProfile?.error}}", "props": { "className": "gk-state gk-error", "role": "alert" }, "children": [{ "type": "basic", "name": "P", "text": "$t:state.error" }, { "type": "basic", "name": "A", "props": { "href": "/knowledge", "className": "gk-link-button" }, "text": "$t:account_page.back_knowledge" }] },
+          {
+            "type": "basic", "name": "Div", "if": "{{accountProfile?.data && !accountProfile?.error}}", "props": { "className": "gk-account-grid" }, "children": [
+              {
+                "type": "basic", "name": "Div", "props": { "className": "gk-account-panel" }, "children": [
+                  { "type": "basic", "name": "H2", "props": { "className": "gk-subtitle" }, "text": "$t:account_page.identity_heading" },
+                  { "type": "basic", "name": "Div", "props": { "className": "gk-account-identity-list" }, "children": [
+                    { "type": "basic", "name": "Div", "props": { "className": "gk-account-identity-item" }, "children": [{ "type": "basic", "name": "Span", "text": "$t:account_page.name" }, { "type": "basic", "name": "Span", "props": { "className": "gk-account-identity-value" }, "text": "{{accountProfile.data.name ?? ''}}" }] },
+                    { "type": "basic", "name": "Div", "props": { "className": "gk-account-identity-item" }, "children": [{ "type": "basic", "name": "Span", "text": "$t:account_page.nickname" }, { "type": "basic", "name": "Span", "props": { "className": "gk-account-identity-value" }, "text": "{{accountProfile.data.nickname ?? ''}}" }] },
+                    { "type": "basic", "name": "Div", "props": { "className": "gk-account-identity-item" }, "children": [{ "type": "basic", "name": "Span", "text": "$t:account_page.email" }, { "type": "basic", "name": "Span", "props": { "className": "gk-account-identity-value" }, "text": "{{accountProfile.data.email ?? ''}}" }] }
+                  ] }
+                ]
+              },
+              {
+                "type": "basic", "name": "Div", "props": { "className": "gk-account-panel" }, "children": [
+                  { "type": "basic", "name": "H2", "props": { "className": "gk-subtitle" }, "text": "$t:account_page.profile_heading" },
+                  { "type": "basic", "name": "Div", "if": "{{_local.profileSuccess}}", "props": { "className": "gk-form-message gk-form-message-success", "role": "status" }, "text": "{{_local.profileSuccess}}" },
+                  { "type": "basic", "name": "Div", "if": "{{_local.profileError && !_local.profileErrors}}", "props": { "className": "gk-form-message gk-form-message-error", "role": "alert" }, "text": "{{_local.profileError}}" },
+                  {
+                    "type": "basic", "name": "Form", "dataKey": "profileForm", "props": { "className": "gk-form" }, "children": [
+                      { "type": "basic", "name": "Label", "props": { "htmlFor": "gk-profile-name", "className": "gk-form-label" }, "text": "$t:account_page.name" },
+                      { "type": "basic", "name": "Input", "props": { "id": "gk-profile-name", "name": "name", "type": "text", "autoComplete": "name", "required": true, "disabled": "{{_local.profileSaving}}", "className": "gk-form-input" } },
+                      { "type": "basic", "name": "P", "if": "{{_local.profileErrors?.name}}", "props": { "className": "gk-form-message gk-form-message-error", "role": "alert" }, "text": "{{Array.isArray(_local.profileErrors.name) ? _local.profileErrors.name[0] : _local.profileErrors.name}}" },
+                      { "type": "basic", "name": "Label", "props": { "htmlFor": "gk-profile-nickname", "className": "gk-form-label" }, "text": "$t:account_page.nickname" },
+                      { "type": "basic", "name": "Input", "props": { "id": "gk-profile-nickname", "name": "nickname", "type": "text", "autoComplete": "nickname", "disabled": "{{_local.profileSaving}}", "className": "gk-form-input" } },
+                      { "type": "basic", "name": "P", "if": "{{_local.profileErrors?.nickname}}", "props": { "className": "gk-form-message gk-form-message-error", "role": "alert" }, "text": "{{Array.isArray(_local.profileErrors.nickname) ? _local.profileErrors.nickname[0] : _local.profileErrors.nickname}}" },
+                      { "type": "basic", "name": "Label", "props": { "htmlFor": "gk-profile-email", "className": "gk-form-label" }, "text": "$t:account_page.email" },
+                      { "type": "basic", "name": "Input", "props": { "id": "gk-profile-email", "name": "email", "type": "email", "autoComplete": "email", "required": true, "disabled": "{{_local.profileSaving}}", "className": "gk-form-input" } },
+                      { "type": "basic", "name": "P", "if": "{{_local.profileErrors?.email}}", "props": { "className": "gk-form-message gk-form-message-error", "role": "alert" }, "text": "{{Array.isArray(_local.profileErrors.email) ? _local.profileErrors.email[0] : _local.profileErrors.email}}" },
+                      { "type": "basic", "name": "Button", "props": { "type": "submit", "disabled": "{{_local.profileSaving}}", "className": "gk-form-submit" }, "text": "$t:account_page.save_profile" }
+                    ], "actions": [{ "type": "submit", "handler": "sequence", "actions": [
+                      { "handler": "setState", "params": { "target": "local", "profileSaving": true, "profileSuccess": null, "profileError": null, "profileErrors": null } },
+                      { "handler": "apiCall", "auth_required": true, "target": "/api/me", "params": { "method": "PUT", "body": "{{{name: _local.profileForm?.name, nickname: _local.profileForm?.nickname, email: _local.profileForm?.email}}}" }, "onSuccess": [{ "handler": "setState", "params": { "target": "local", "profileSaving": false, "profileSuccess": "$t:account_page.profile_saved", "profileError": null, "profileErrors": null } }, { "handler": "refetchDataSource", "params": { "dataSourceId": "accountProfile" } }], "onError": [{ "handler": "setState", "params": { "target": "local", "profileSaving": false, "profileSuccess": null, "profileError": "$t:account_page.profile_failed", "profileErrors": "{{error.response?.errors ?? error.errors}}" } }] }
+                    ] }]
+                  }
+                ]
+              },
+              {
+                "type": "basic", "name": "Div", "props": { "className": "gk-account-panel gk-account-section" }, "children": [
+                  { "type": "basic", "name": "H2", "props": { "className": "gk-subtitle" }, "text": "$t:account_page.password_heading" },
+                  { "type": "basic", "name": "Div", "if": "{{_local.passwordSuccess}}", "props": { "className": "gk-form-message gk-form-message-success", "role": "status" }, "text": "{{_local.passwordSuccess}}" },
+                  { "type": "basic", "name": "Div", "if": "{{_local.passwordError && !_local.passwordErrors}}", "props": { "className": "gk-form-message gk-form-message-error", "role": "alert" }, "text": "{{_local.passwordError}}" },
+                  {
+                    "type": "basic", "name": "Form", "dataKey": "passwordForm", "props": { "className": "gk-form" }, "children": [
+                      { "type": "basic", "name": "Label", "props": { "htmlFor": "gk-current-password", "className": "gk-form-label" }, "text": "$t:account_page.current_password" },
+                      { "type": "basic", "name": "Input", "props": { "id": "gk-current-password", "name": "current_password", "type": "password", "autoComplete": "current-password", "required": true, "disabled": "{{_local.passwordSaving}}", "className": "gk-form-input" } },
+                      { "type": "basic", "name": "P", "if": "{{_local.passwordErrors?.current_password}}", "props": { "className": "gk-form-message gk-form-message-error", "role": "alert" }, "text": "{{Array.isArray(_local.passwordErrors.current_password) ? _local.passwordErrors.current_password[0] : _local.passwordErrors.current_password}}" },
+                      { "type": "basic", "name": "Label", "props": { "htmlFor": "gk-new-password", "className": "gk-form-label" }, "text": "$t:account_page.new_password" },
+                      { "type": "basic", "name": "Input", "props": { "id": "gk-new-password", "name": "password", "type": "password", "autoComplete": "new-password", "required": true, "disabled": "{{_local.passwordSaving}}", "className": "gk-form-input" } },
+                      { "type": "basic", "name": "P", "if": "{{_local.passwordErrors?.password}}", "props": { "className": "gk-form-message gk-form-message-error", "role": "alert" }, "text": "{{Array.isArray(_local.passwordErrors.password) ? _local.passwordErrors.password[0] : _local.passwordErrors.password}}" },
+                      { "type": "basic", "name": "Label", "props": { "htmlFor": "gk-password-confirmation", "className": "gk-form-label" }, "text": "$t:auth_page.password_confirmation" },
+                      { "type": "basic", "name": "Input", "props": { "id": "gk-password-confirmation", "name": "password_confirmation", "type": "password", "autoComplete": "new-password", "required": true, "disabled": "{{_local.passwordSaving}}", "className": "gk-form-input" } },
+                      { "type": "basic", "name": "P", "if": "{{_local.passwordErrors?.password_confirmation}}", "props": { "className": "gk-form-message gk-form-message-error", "role": "alert" }, "text": "{{Array.isArray(_local.passwordErrors.password_confirmation) ? _local.passwordErrors.password_confirmation[0] : _local.passwordErrors.password_confirmation}}" },
+                      { "type": "basic", "name": "Button", "props": { "type": "submit", "disabled": "{{_local.passwordSaving}}", "className": "gk-form-submit" }, "text": "$t:account_page.change_password" }
+                    ], "actions": [{ "type": "submit", "handler": "sequence", "actions": [
+                      { "handler": "setState", "params": { "target": "local", "passwordSaving": true, "passwordSuccess": null, "passwordError": null, "passwordErrors": null } },
+                      { "handler": "apiCall", "auth_required": true, "target": "/api/me/password", "params": { "method": "PUT", "body": "{{_local.passwordForm}}" }, "onSuccess": [{ "handler": "setState", "params": { "target": "local", "passwordSaving": false, "passwordSuccess": "$t:account_page.password_saved", "passwordError": null, "passwordErrors": null, "passwordForm": { "current_password": "", "password": "", "password_confirmation": "" } } }], "onError": [{ "handler": "setState", "params": { "target": "local", "passwordSaving": false, "passwordSuccess": null, "passwordError": "$t:account_page.password_failed", "passwordErrors": "{{error.response?.errors ?? error.errors}}" } }] }
+                    ] }]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "layout_name": "errors/403",
+  "extends": "_user_base",
+  "meta": { "title": "$t:errors.403.title", "is_error_layout": true, "error_code": 403 },
+  "slots": {
+    "content": [
+      {
+        "type": "basic",
+        "name": "Section",
+        "props": { "className": "gk-container gk-shell gk-error-page" },
+        "children": [
+          { "type": "basic", "name": "Span", "props": { "className": "gk-eyebrow" }, "text": "$t:errors.403.code" },
+          { "type": "basic", "name": "H1", "props": { "className": "gk-title" }, "text": "$t:errors.403.title" },
+          { "type": "basic", "name": "P", "props": { "className": "gk-lede" }, "text": "$t:errors.403.body" },
+          { "type": "basic", "name": "A", "props": { "href": "/knowledge", "className": "gk-link-button" }, "text": "$t:errors.back_home" }
+        ]
+      }
+    ]
+  }
+}

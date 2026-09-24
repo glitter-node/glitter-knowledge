@@ -1,0 +1,25 @@
+{
+  "identifier": "glitter-knowledge",
+  "vendor": "Glitter.kr",
+  "name": { "ko": "Glitter Knowledge", "en": "Glitter Knowledge" },
+  "version": "0.13.0",
+  "license": "MIT",
+  "description": {
+    "ko": "그누보드7 게시판을 지식 문서와 도움말 센터로 표현하는 범용 사용자 템플릿",
+    "en": "A general-purpose user template for presenting Gnuboard7 boards as knowledge and help centers"
+  },
+  "type": "user",
+  "locales": ["ko", "en"],
+  "author": { "name": "Glitter.kr", "email": "admin@glitter.kr", "url": "https://glitter.kr" },
+  "release_date": "2026-09-23",
+  "g7_version": ">=7.0.11",
+  "dependencies": { "modules": { "sirsoft-board": ">=1.1.2" }, "plugins": {} },
+  "error_config": { "layouts": { "403": "errors/403", "404": "errors/404", "500": "errors/500" } },
+  "assets": { "css": ["dist/css/components.css"], "js": ["dist/js/components.iife.js"], "fonts": [], "images": [] },
+  "components": {
+    "basic": ["a", "article", "button", "div", "footer", "form", "h1", "h2", "h3", "header", "hr", "img", "input", "label", "li", "main", "p", "section", "span", "time", "ul"],
+    "composite": ["html-content", "document-content", "knowledge-header"],
+    "layout": []
+  },
+  "features": { "dark_mode": true, "responsive": true, "multi_language": true, "multi_currency": false }
+}

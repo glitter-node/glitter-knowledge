@@ -1,0 +1,31 @@
+{
+  "name": "@glitter/glitter-knowledge-template",
+  "version": "0.13.0",
+  "description": "Glitter Knowledge Gnuboard 7 user template",
+  "author": "Glitter.kr",
+  "license": "MIT",
+  "keywords": ["g7", "template", "knowledge", "documentation", "help-center"],
+  "type": "module",
+  "main": "dist/js/components.iife.js",
+  "scripts": {
+    "build": "vite build",
+    "build:watch": "vite build --watch",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "dompurify": "3.3.1"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.7.0",
+    "vite": "^7.0.4",
+    "vitest": "^4.0.6"
+  }
+}

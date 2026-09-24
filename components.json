@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "templateId": "glitter-knowledge",
+  "version": "0.13.0",
+  "components": {
+    "basic": [
+      { "name": "A", "type": "basic", "description": "Accessible link", "path": "src/index.ts" },
+      { "name": "Article", "type": "basic", "description": "Article landmark", "path": "src/index.ts" },
+      { "name": "Button", "type": "basic", "description": "Button control", "path": "src/index.ts" },
+      { "name": "Div", "type": "basic", "description": "Generic layout container", "path": "src/index.ts" },
+      { "name": "Footer", "type": "basic", "description": "Footer landmark", "path": "src/index.ts" },
+      { "name": "Form", "type": "basic", "description": "Form element", "path": "src/index.ts" },
+      { "name": "H1", "type": "basic", "description": "Primary heading", "path": "src/index.ts" },
+      { "name": "H2", "type": "basic", "description": "Section heading", "path": "src/index.ts" },
+      { "name": "H3", "type": "basic", "description": "Subheading", "path": "src/index.ts" },
+      { "name": "Header", "type": "basic", "description": "Header landmark", "path": "src/index.ts" },
+      { "name": "Hr", "type": "basic", "description": "Section divider", "path": "src/index.ts" },
+      { "name": "Input", "type": "basic", "description": "Form input", "path": "src/index.ts" },
+      { "name": "Img", "type": "basic", "description": "Image element", "path": "src/index.ts" },
+      { "name": "Label", "type": "basic", "description": "Form label", "path": "src/index.ts" },
+      { "name": "Li", "type": "basic", "description": "List item", "path": "src/index.ts" },
+      { "name": "Main", "type": "basic", "description": "Main content landmark", "path": "src/index.ts" },
+      { "name": "P", "type": "basic", "description": "Paragraph", "path": "src/index.ts" },
+      { "name": "Section", "type": "basic", "description": "Section landmark", "path": "src/index.ts" },
+      { "name": "Span", "type": "basic", "description": "Inline text", "path": "src/index.ts" },
+      { "name": "Time", "type": "basic", "description": "Time semantic element", "path": "src/index.ts" },
+      { "name": "Ul", "type": "basic", "description": "List", "path": "src/index.ts" }
+    ],
+    "composite": [
+      {
+        "name": "KnowledgeHeader",
+        "type": "composite",
+        "description": "G7 인증 상태를 사용하는 Knowledge 헤더",
+        "path": "src/components/composite/KnowledgeHeader.tsx"
+      },
+      {
+        "name": "HtmlContent",
+        "type": "composite",
+        "description": "HTML 콘텐츠를 안전하게 렌더링하는 컴포넌트 - DOMPurify를 사용한 XSS 방지",
+        "path": "src/components/composite/HtmlContent.tsx",
+        "props": {
+          "content": { "type": "string", "required": true, "description": "렌더링할 HTML 콘텐츠 문자열" },
+          "isHtml": { "type": "boolean", "required": false, "default": true, "description": "HTML 렌더링 여부" },
+          "className": { "type": "string", "required": false, "default": "", "description": "사용자 정의 클래스" },
+          "purifyConfig": { "type": "object", "required": false, "description": "DOMPurify 설정 객체" },
+          "text": { "type": "string", "required": false, "description": "content보다 우선하는 일반 텍스트" }
+        }
+      },
+      {
+        "name": "DocumentContent",
+        "type": "composite",
+        "description": "안전한 문서 렌더링과 목차를 제공하는 Knowledge 문서 컴포넌트",
+        "path": "src/components/composite/DocumentContent.tsx",
+        "props": {
+          "content": { "type": "string", "required": true, "description": "렌더링할 문서 콘텐츠 문자열" },
+          "isHtml": { "type": "boolean", "required": false, "default": true },
+          "className": { "type": "string", "required": false, "default": "" },
+          "showToc": { "type": "boolean", "required": false, "default": true },
+          "tocLabel": { "type": "string", "required": false, "default": "" },
+          "progressLabel": { "type": "string", "required": false, "default": "" },
+          "contentId": { "type": "string", "required": false, "default": "gk-reader-document-content" },
+          "id": { "type": "string", "required": false },
+          "editorAttrs": { "type": "object", "required": false }
+        }
+      },
+      {
+        "name": "KnowledgeCollectionNavigation",
+        "type": "composite",
+        "description": "기존 게시판 Category를 Collection sibling navigation으로 표현하는 컴포넌트",
+        "path": "src/components/composite/KnowledgeCollectionNavigation.tsx",
+        "props": {
+          "categories": { "type": "array", "required": true },
+          "currentCategory": { "type": "string", "required": true },
+          "basePath": { "type": "string", "required": true },
+          "navigationLabel": { "type": "string", "required": false, "default": "" },
+          "invalidLabel": { "type": "string", "required": false, "default": "" },
+          "emptyLabel": { "type": "string", "required": false, "default": "" },
+          "searchEmptyLabel": { "type": "string", "required": false, "default": "" },
+          "searchQuery": { "type": "string", "required": false, "default": "" },
+          "posts": { "type": "array", "required": false, "default": [] },
+          "loading": { "type": "boolean", "required": false, "default": false },
+          "error": { "type": "boolean", "required": false, "default": false },
+          "showEmptyState": { "type": "boolean", "required": false, "default": false },
+          "className": { "type": "string", "required": false, "default": "" },
+          "id": { "type": "string", "required": false }
+        }
+      }
+    ],
+    "layout": []
+  }
+}

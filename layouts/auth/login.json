@@ -1,0 +1,54 @@
+{
+  "version": "1.0.0",
+  "layout_name": "auth/login",
+  "extends": "_user_base",
+  "meta": { "title": "$t:auth_page.login_title", "guest_only": true },
+  "init_actions": [
+    { "handler": "setState", "params": { "target": "local", "loginForm": { "email": "", "password": "", "code": "" }, "isLoggingIn": false, "loginError": null, "loginErrors": null, "twoFactor": null } }
+  ],
+  "slots": {
+    "content": [
+      {
+        "type": "basic", "name": "Section", "props": { "className": "gk-container gk-shell gk-auth-shell" },
+        "children": [
+          { "type": "basic", "name": "P", "props": { "className": "gk-eyebrow" }, "text": "$t:auth_page.kicker" },
+          { "type": "basic", "name": "H1", "props": { "className": "gk-page-title" }, "text": "$t:auth_page.login_heading" },
+          { "type": "basic", "name": "P", "props": { "className": "gk-lede" }, "text": "$t:auth_page.login_description" },
+          {
+            "type": "basic", "name": "Form", "dataKey": "loginForm", "props": { "className": "gk-auth-card gk-form" },
+            "children": [
+              { "type": "basic", "name": "Div", "if": "{{_local.loginError}}", "props": { "className": "gk-form-message gk-form-message-error", "role": "alert" }, "text": "{{_local.loginError}}" },
+              { "type": "basic", "name": "Div", "if": "{{!_local.twoFactor?.required}}", "children": [
+                { "type": "basic", "name": "Label", "props": { "htmlFor": "gk-login-email", "className": "gk-form-label" }, "text": "$t:auth_page.email" },
+                { "type": "basic", "name": "Input", "props": { "id": "gk-login-email", "name": "email", "type": "email", "autoComplete": "email", "required": true, "disabled": "{{_local.isLoggingIn}}", "className": "gk-form-input" } },
+                { "type": "basic", "name": "P", "if": "{{_local.loginErrors?.email}}", "props": { "className": "gk-form-message gk-form-message-error", "role": "alert" }, "text": "{{Array.isArray(_local.loginErrors.email) ? _local.loginErrors.email[0] : _local.loginErrors.email}}" },
+                { "type": "basic", "name": "Label", "props": { "htmlFor": "gk-login-password", "className": "gk-form-label" }, "text": "$t:auth_page.password" },
+                { "type": "basic", "name": "Input", "props": { "id": "gk-login-password", "name": "password", "type": "password", "autoComplete": "current-password", "required": true, "disabled": "{{_local.isLoggingIn}}", "className": "gk-form-input" } },
+                { "type": "basic", "name": "P", "if": "{{_local.loginErrors?.password}}", "props": { "className": "gk-form-message gk-form-message-error", "role": "alert" }, "text": "{{Array.isArray(_local.loginErrors.password) ? _local.loginErrors.password[0] : _local.loginErrors.password}}" }
+              ] },
+              { "type": "basic", "name": "Div", "if": "{{_local.twoFactor?.required}}", "children": [
+                { "type": "basic", "name": "Label", "props": { "htmlFor": "gk-login-code", "className": "gk-form-label" }, "text": "$t:auth_page.two_factor_code" },
+                { "type": "basic", "name": "Input", "props": { "id": "gk-login-code", "name": "code", "type": "text", "inputMode": "numeric", "autoComplete": "one-time-code", "required": true, "disabled": "{{_local.isLoggingIn}}", "className": "gk-form-input" } },
+                { "type": "basic", "name": "P", "if": "{{_local.loginErrors?.code}}", "props": { "className": "gk-form-message gk-form-message-error", "role": "alert" }, "text": "{{Array.isArray(_local.loginErrors.code) ? _local.loginErrors.code[0] : _local.loginErrors.code}}" }
+              ] },
+              { "type": "basic", "name": "Button", "props": { "type": "submit", "disabled": "{{_local.isLoggingIn}}", "className": "gk-form-submit" }, "text": "$t:auth_page.login_submit" }
+            ],
+            "actions": [{ "type": "submit", "handler": "sequence", "actions": [
+              { "handler": "setState", "params": { "target": "local", "isLoggingIn": true, "loginError": null, "loginErrors": null } },
+              { "handler": "login", "target": "user", "if": "{{!_local.twoFactor?.required}}", "params": { "body": { "email": "{{form.email}}", "password": "{{form.password}}" } }, "onSuccess": [
+                { "handler": "setState", "params": { "target": "local", "isLoggingIn": false, "twoFactor": "{{response.two_factor_required ? {required: true, challenge_id: response.challenge_id, expires_at: response.expires_at} : null}}" } },
+                { "handler": "navigate", "if": "{{!response.two_factor_required}}", "params": { "path": "/knowledge" } }
+              ], "onError": [{ "handler": "setState", "params": { "target": "local", "isLoggingIn": false, "loginError": "$t:auth_page.login_failed", "loginErrors": "{{error.response?.errors ?? error.errors}}" } }] },
+              { "handler": "loginTwoFactor", "target": "user", "if": "{{_local.twoFactor?.required}}", "params": { "body": { "challenge_id": "{{_local.twoFactor.challenge_id}}", "code": "{{form.code}}" } }, "onSuccess": [
+                { "handler": "setState", "params": { "target": "global", "currentUser": "{{response.user}}" } },
+                { "handler": "setState", "params": { "target": "local", "isLoggingIn": false, "twoFactor": null } },
+                { "handler": "navigate", "params": { "path": "/knowledge" } }
+              ], "onError": [{ "handler": "setState", "params": { "target": "local", "isLoggingIn": false, "loginError": "$t:auth_page.two_factor_failed", "loginErrors": "{{error.response?.errors ?? error.errors}}" } }] }
+            ] }]
+          },
+          { "type": "basic", "name": "P", "props": { "className": "gk-auth-switch" }, "children": [{ "type": "basic", "name": "Span", "text": "$t:auth_page.login_register_prompt" }, { "type": "basic", "name": "A", "props": { "href": "/register", "className": "gk-text-link" }, "text": "$t:auth.register" }] }
+        ]
+      }
+    ]
+  }
+}

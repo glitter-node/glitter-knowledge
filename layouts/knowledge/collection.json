@@ -1,0 +1,50 @@
+{
+  "version": "1.0.0",
+  "layout_name": "knowledge/collection",
+  "extends": "_user_base",
+  "meta": { "title": "$t:collection.page_title", "description": "$t:collection.description" },
+  "data_sources": [
+    { "id": "collectionBoard", "label_key": "$t:collection.data_source", "type": "api", "endpoint": "/api/modules/sirsoft-board/boards/{{route.slug}}", "method": "GET", "params": {}, "auto_fetch": true, "auth_mode": "optional", "loading_strategy": "blocking", "refetchOnMount": true },
+    { "id": "collectionPosts", "label_key": "$t:collection.posts_data_source", "type": "api", "endpoint": "/api/modules/sirsoft-board/boards/{{route.slug}}/posts", "method": "GET", "params": { "page": "{{query?.page ?? 1}}", "per_page": "{{query?.per_page ?? 10}}", "search": "{{query?.q ?? ''}}", "category": "{{query?.category ?? ''}}" }, "auto_fetch": true, "auth_mode": "optional", "loading_strategy": "progressive", "refetchOnMount": true }
+  ],
+  "slots": {
+    "content": [
+      {
+        "type": "basic",
+        "name": "Section",
+        "props": { "className": "gk-container gk-shell gk-collection-page" },
+        "children": [
+          { "type": "basic", "name": "A", "props": { "href": "/knowledge/{{route.slug}}{{query?.q ? '?q=' + query.q : ''}}", "className": "gk-back-link" }, "text": "$t:collection.back_home" },
+          { "type": "basic", "name": "Div", "if": "{{collectionBoard?.loading}}", "props": { "className": "gk-state gk-state-inline", "role": "status", "aria-live": "polite" }, "children": [{ "type": "basic", "name": "P", "text": "$t:state.loading" }] },
+          { "type": "basic", "name": "Div", "if": "{{collectionBoard?.error}}", "props": { "className": "gk-state gk-error", "role": "alert" }, "children": [{ "type": "basic", "name": "P", "text": "$t:knowledge.board_error" }, { "type": "basic", "name": "A", "props": { "href": "/knowledge/{{route.slug}}", "className": "gk-link-button" }, "text": "$t:collection.back_home" }] },
+          {
+            "type": "basic",
+            "name": "Div",
+            "if": "{{collectionBoard?.data && !collectionBoard?.error}}",
+            "children": [
+              { "type": "basic", "name": "P", "props": { "className": "gk-eyebrow" }, "text": "$t:collection.kicker" },
+              { "type": "basic", "name": "H1", "props": { "className": "gk-page-title gk-collection-title" }, "text": "{{query?.category ?? ''}}" },
+              { "type": "basic", "name": "P", "props": { "className": "gk-section-intro gk-collection-topic-context" }, "text": "$t:collection.topic_context|topic={{collectionBoard?.data?.name ?? ''}}" },
+              { "type": "composite", "name": "KnowledgeCollectionNavigation", "props": { "categories": "{{collectionBoard?.data?.categories ?? []}}", "currentCategory": "{{query?.category ?? ''}}", "basePath": "/knowledge/{{route.slug}}/collections", "navigationLabel": "$t:collection.navigation_label", "invalidLabel": "$t:collection.invalid_category", "emptyLabel": "$t:collection.empty", "searchEmptyLabel": "$t:collection.search_empty", "searchQuery": "{{query?.q ?? ''}}", "posts": "{{collectionPosts?.data?.data ?? []}}", "loading": "{{collectionPosts?.loading}}", "error": "{{collectionPosts?.error}}", "showEmptyState": true, "className": "gk-collection-siblings" } },
+              {
+                "type": "basic",
+                "name": "Section",
+                "props": { "className": "gk-search-panel gk-collection-search", "aria-labelledby": "gk-collection-search-title" },
+                "children": [
+                  { "type": "basic", "name": "H2", "props": { "id": "gk-collection-search-title", "className": "gk-panel-title" }, "text": "$t:collection.search_label" },
+                  { "type": "basic", "name": "Form", "dataKey": "collectionSearch", "props": { "className": "gk-search", "role": "search" }, "actions": [{ "type": "submit", "handler": "navigate", "params": { "path": "/knowledge/{{route.slug}}/collections", "mergeQuery": false, "query": { "category": "{{query?.category ?? ''}}", "q": "{{$event.target.q.value}}", "page": 1 } } }], "children": [{ "type": "basic", "name": "Label", "props": { "className": "gk-search-label", "htmlFor": "gk-collection-search-query" }, "text": "$t:collection.search_label" }, { "type": "basic", "name": "Input", "props": { "id": "gk-collection-search-query", "name": "q", "type": "search", "value": "{{query?.q ?? ''}}", "className": "gk-search-input", "placeholder": "$t:collection.search_placeholder" } }, { "type": "basic", "name": "Button", "props": { "type": "submit", "className": "gk-button" }, "text": "$t:collection.search_submit" }] },
+                  { "type": "basic", "name": "A", "if": "{{query?.q}}", "props": { "href": "/knowledge/{{route.slug}}/collections?category={{query?.category ?? ''}}", "className": "gk-search-clear" }, "text": "$t:collection.search_clear" }
+                ]
+              },
+              { "type": "basic", "name": "H2", "props": { "className": "gk-section-heading gk-collection-documents-title" }, "text": "$t:collection.documents_title" },
+              { "type": "basic", "name": "Div", "if": "{{collectionPosts?.loading}}", "props": { "className": "gk-state gk-state-inline", "role": "status", "aria-live": "polite" }, "children": [{ "type": "basic", "name": "P", "text": "$t:state.loading" }] },
+              { "type": "basic", "name": "Div", "if": "{{collectionPosts?.error}}", "props": { "className": "gk-state gk-error", "role": "alert" }, "children": [{ "type": "basic", "name": "P", "text": "$t:state.error" }, { "type": "basic", "name": "Button", "props": { "type": "button", "className": "gk-link-button" }, "actions": [{ "type": "click", "handler": "refetchDataSource", "params": { "dataSourceId": "collectionPosts" } }], "text": "$t:state.retry" }] },
+              { "type": "basic", "name": "Div", "if": "{{!collectionPosts?.loading && !collectionPosts?.error && (collectionPosts?.data?.data?.length ?? 0) > 0}}", "props": { "className": "gk-document-list" }, "children": [{ "type": "basic", "name": "Article", "iteration": { "source": "{{collectionPosts?.data?.data ?? []}}", "item_var": "post", "index_var": "idx" }, "props": { "className": "gk-document-row" }, "children": [{ "type": "basic", "name": "A", "props": { "href": "/knowledge/{{route.slug}}/documents/{{post.id}}?category={{query?.category ?? ''}}{{query?.q ? '&q=' + query.q : ''}}", "className": "gk-document-link" }, "children": [{ "type": "basic", "name": "H3", "props": { "className": "gk-document-title" }, "text": "{{post.title ?? ''}}" }, { "type": "basic", "name": "P", "if": "{{post.content_preview}}", "props": { "className": "gk-document-excerpt" }, "text": "{{post.content_preview}}" }, { "type": "basic", "name": "Div", "props": { "className": "gk-document-meta" }, "children": [{ "type": "basic", "name": "Time", "if": "{{post.created_at}}", "props": { "datetime": "{{post.created_at}}" }, "text": "{{post.created_at_formatted ?? post.created_at ?? ''}}" }] }] }] }] },
+              { "type": "basic", "name": "Div", "if": "{{collectionPosts.data.pagination && (collectionPosts.data.pagination.current_page > 1 || collectionPosts.data.pagination.has_more_pages === true)}}", "props": { "className": "gk-collection-pagination", "role": "navigation", "aria-label": "$t:collection.pagination_label" }, "children": [{ "type": "basic", "name": "A", "if": "{{collectionPosts.data.pagination.current_page > 1}}", "props": { "href": "/knowledge/{{route.slug}}/collections?category={{query?.category ?? ''}}{{query?.q ? '&q=' + query.q : ''}}&page={{collectionPosts.data.pagination.current_page - 1}}", "className": "gk-link-button", "aria-label": "$t:collection.previous_page" }, "text": "$t:collection.previous" }, { "type": "basic", "name": "A", "if": "{{collectionPosts.data.pagination.has_more_pages === true}}", "props": { "href": "/knowledge/{{route.slug}}/collections?category={{query?.category ?? ''}}{{query?.q ? '&q=' + query.q : ''}}&page={{collectionPosts.data.pagination.current_page + 1}}", "className": "gk-link-button", "aria-label": "$t:collection.next_page" }, "text": "$t:collection.next" }] }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

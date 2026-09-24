@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "description": "Glitter Knowledge foundation routes",
+  "routes": [
+    { "path": "/login", "layout": "auth/login", "guest_only": true, "meta": { "title": "$t:auth_page.login_title" } },
+    { "path": "/register", "layout": "auth/register", "guest_only": true, "meta": { "title": "$t:auth_page.register_title" } },
+    { "path": "/account", "layout": "account/index", "auth_required": true, "meta": { "title": "$t:account_page.title" } },
+    { "path": "/", "layout": "home", "auth_required": false, "meta": { "title": "$t:discovery.page_title" } },
+    { "path": "/knowledge", "layout": "home", "auth_required": false, "meta": { "title": "$t:discovery.page_title" } },
+    { "path": "/knowledge/:slug/collections", "layout": "knowledge/collection", "auth_required": false, "meta": { "title": "$t:collection.page_title" } },
+    { "path": "/knowledge/:slug/documents/:id", "layout": "knowledge/reader", "auth_required": false, "meta": { "title": "$t:reader.page_title" } },
+    { "path": "/knowledge/:slug", "layout": "knowledge/home", "auth_required": false, "meta": { "title": "$t:knowledge.page_title" } }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "version": "1.0.0",
+  "layout_name": "_user_base",
+  "meta": { "title": "$t:base.title", "is_base": true },
+  "data_sources": [{ "id": "current_user", "label_key": "$t:auth.current_user_data_source", "type": "api", "endpoint": "/api/auth/user", "method": "GET", "auto_fetch": true, "auth_required": true, "loading_strategy": "progressive", "initGlobal": "currentUser", "fallback": { "data": null } }],
+  "slots": { "content": [] },
+  "components": [
+    {
+      "type": "basic",
+      "name": "Div",
+      "props": { "className": "glitter-knowledge-root" },
+      "children": [
+        {
+          "type": "composite",
+          "name": "KnowledgeHeader",
+          "if": "{{!_global.currentUser?.uuid}}",
+          "props": {
+            "brandName": "$t:brand.name",
+            "loginLabel": "$t:auth.login",
+            "registerLabel": "$t:auth.register",
+            "themeLabel": "$t:theme.label",
+            "themeSystemLabel": "$t:theme.system",
+            "themeLightLabel": "$t:theme.light",
+            "themeDarkLabel": "$t:theme.dark",
+            "navigationLabel": "$t:base.navigation_label",
+            "navItems": [{ "label": "$t:nav.browse", "href": "/knowledge" }]
+          }
+        },
+        {
+          "type": "composite",
+          "name": "KnowledgeHeader",
+          "if": "{{_global.currentUser?.uuid}}",
+          "actions": [{ "event": "onLogout", "handler": "logout", "target": "user", "onSuccess": [{ "handler": "navigate", "params": { "path": "/knowledge" } }] }],
+          "props": {
+            "brandName": "$t:brand.name",
+            "authenticated": true,
+            "nickname": "{{_global.currentUser?.nickname}}",
+            "name": "{{_global.currentUser?.name}}",
+            "avatar": "{{_global.currentUser?.avatar}}",
+            "isAdmin": "{{_global.currentUser?.is_admin}}",
+            "accountLabel": "$t:auth.account",
+            "logoutLabel": "$t:auth.logout",
+            "adminLabel": "$t:auth.admin",
+                "languageLabel": "$t:auth.language",
+                "themeLabel": "$t:theme.label",
+                "themeSystemLabel": "$t:theme.system",
+                "themeLightLabel": "$t:theme.light",
+                "themeDarkLabel": "$t:theme.dark",
+                "navigationLabel": "$t:base.navigation_label",
+                "languageOptionsLabel": { "ko": "$t:auth.language_ko", "en": "$t:auth.language_en", "ja": "$t:auth.language_ja" },
+            "navItems": [{ "label": "$t:nav.browse", "href": "/knowledge" }]
+          }
+        },
+        { "type": "basic", "name": "Main", "props": { "className": "gk-main" }, "children": [{ "type": "basic", "name": "Div", "slot": "content", "children": [] }] },
+        {
+          "type": "basic",
+          "name": "Footer",
+          "props": { "className": "gk-footer" },
+          "children": [
+            {
+              "type": "basic",
+              "name": "Div",
+              "props": { "className": "gk-container gk-footer-inner" },
+              "children": [
+                { "type": "basic", "name": "Span", "text": "$t:footer.copyright" },
+                { "type": "basic", "name": "A", "props": { "href": "/knowledge", "className": "gk-footer-link" }, "text": "$t:nav.knowledge" }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
